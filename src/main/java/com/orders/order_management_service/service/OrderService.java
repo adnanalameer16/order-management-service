@@ -1,7 +1,9 @@
 package com.orders.order_management_service.service;
 
+import com.orders.order_management_service.event.OrderPlacedEvent;
 import com.orders.order_management_service.model.Order;
 import com.orders.order_management_service.model.OrderItem;
+import com.orders.order_management_service.producer.OrderProducer;
 import com.orders.order_management_service.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,24 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private OrderProducer orderProducer;
+
 
     public Order createOrder(List<OrderItem> items) {
         String orderId = UUID.randomUUID().toString();
         Order order = new Order(items,orderId);
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        OrderPlacedEvent event = new OrderPlacedEvent(
+                savedOrder.getOrderId(),
+                savedOrder.getTotalPrice(),
+                savedOrder.getItems().size()
+        );
+
+        orderProducer.sendOrderEvent(event);
+
+        return savedOrder;
+
     }
 }
