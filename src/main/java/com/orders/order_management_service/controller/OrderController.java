@@ -4,9 +4,7 @@ import com.orders.order_management_service.model.Order;
 import com.orders.order_management_service.service.OrderService;
 import com.orders.order_management_service.model.OrderItem;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,5 +17,10 @@ public class OrderController {
     @PostMapping("/orders")
     public Order createOrder(@RequestBody List<OrderItem> items) {
         return orderService.createOrder(items);
+    }
+
+    @GetMapping("/orders/{id}")
+    public Order getOrder(@PathVariable String id) {
+        return orderService.getOrder(id);
     }
 }

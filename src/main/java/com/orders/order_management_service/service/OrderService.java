@@ -38,4 +38,8 @@ public class OrderService {
         return savedOrder;
 
     }
+
+    public Order getOrder(String orderId) {
+        return orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+    }
 }
