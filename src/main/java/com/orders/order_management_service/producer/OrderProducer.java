@@ -1,6 +1,7 @@
 package com.orders.order_management_service.producer;
 
 import com.orders.order_management_service.event.OrderPlacedEvent;
+import com.orders.order_management_service.event.ReadyForShippingEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -24,6 +25,19 @@ public class OrderProducer {
 
         kafkaTemplate.send(message);
         System.out.println("Message Sent to Kafka: " + event.getOrderId());
+
+    }
+
+    public void sendShippingEvent(ReadyForShippingEvent event) {
+
+        Message<ReadyForShippingEvent> message = MessageBuilder
+                                            .withPayload(event)
+                                            .setHeader(KafkaHeaders.TOPIC, "order.ready_for_shipping")
+                                            .setHeader("event-type", "ShippingCreated")
+                                            .build();
+
+        kafkaTemplate.send(message);
+        System.out.println("Shipping Event Sent to Kafka");
 
     }
 }
