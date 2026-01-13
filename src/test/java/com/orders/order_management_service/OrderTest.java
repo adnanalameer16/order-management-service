@@ -18,7 +18,7 @@ public class OrderTest {
                     new OrderItem("1", 100.0, 2)
             );
 
-            Order order = new Order(items, "order123");
+            Order order = new Order(items, "order123", null);
 
             assertEquals(200.0, order.getTotalPrice());
         }

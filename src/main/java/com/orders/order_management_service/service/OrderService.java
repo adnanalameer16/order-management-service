@@ -3,6 +3,7 @@ package com.orders.order_management_service.service;
 import com.orders.order_management_service.event.OrderPlacedEvent;
 import com.orders.order_management_service.model.Order;
 import com.orders.order_management_service.model.OrderItem;
+import com.orders.order_management_service.model.OrderStatus;
 import com.orders.order_management_service.producer.OrderProducer;
 import com.orders.order_management_service.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class OrderService {
 
     public Order createOrder(List<OrderItem> items) {
         String orderId = UUID.randomUUID().toString();
-        Order order = new Order(items,orderId);
+        Order order = new Order(items,orderId, OrderStatus.PENDING_PAYMENT);
         Order savedOrder = orderRepository.save(order);
 
         OrderPlacedEvent event = new OrderPlacedEvent(
