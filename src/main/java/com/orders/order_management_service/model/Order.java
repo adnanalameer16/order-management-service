@@ -4,8 +4,7 @@ import lombok.Data;
 import org.springframework.data.aerospike.mapping.Document;
 import org.springframework.data.annotation.Id;
 
-import lombok.Getter;
-
+import java.time.Instant;
 import java.util.List;
 
 
@@ -13,18 +12,20 @@ import java.util.List;
 @Document
 public class Order {
 
-    @Getter
     private List<OrderItem> items;
-
     private OrderStatus orderStatus;
-
     @Id
     private String orderId;
+    private String customerId;
+    private double subtotal;
+    private double taxRate;
+    private double taxAmount;
+    private double totalAmount;
+    private String createdAt;
 
-    @Getter     // using Lombok to generate getter for totalPrice (return this.totalPrice alternatively)
-    private double totalPrice;
-
-    public Order(List<OrderItem> items, String orderId, OrderStatus orderStatus) {
+    public Order(List<OrderItem> items, String orderId, OrderStatus orderStatus, String customerId) {
+        this.customerId = customerId;
+        this.createdAt = Instant.now().toString();
         this.orderId = orderId;
         this.items = items;
         this.orderStatus = orderStatus;
@@ -32,9 +33,14 @@ public class Order {
     }
 
     private void calculateTotalPrice() {
-        totalPrice = 0.0;
-        for (OrderItem item : items) {
-            totalPrice += item.getSubtotal();
+        subtotal = 0.0;
+        taxRate = 0.10;
+        if (items != null) {
+            for (OrderItem item : items) {
+                this.subtotal += item.getSubtotal();
+            }
         }
+        taxAmount = subtotal * taxRate;
+        totalAmount = subtotal + taxAmount;
     }
 }

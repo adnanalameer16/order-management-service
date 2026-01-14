@@ -4,6 +4,7 @@ import com.orders.order_management_service.model.Order;
 import com.orders.order_management_service.model.OrderItem;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,8 +19,8 @@ public class OrderTest {
                     new OrderItem("1", 100.0, 2)
             );
 
-            Order order = new Order(items, "order123", null);
+            Order order = new Order(items, "order123", null, "test-customer");
 
-            assertEquals(200.0, order.getTotalPrice());
+            assertEquals(200.0, order.getSubtotal());
         }
 }
