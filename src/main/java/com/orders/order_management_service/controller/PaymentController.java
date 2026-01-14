@@ -1,5 +1,6 @@
 package com.orders.order_management_service.controller;
 
+import com.orders.order_management_service.dto.PaymentRequest;
 import com.orders.order_management_service.event.PaymentCompletedEvent;
 import com.orders.order_management_service.producer.PaymentProducer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,12 @@ public class PaymentController {
 
 
     @PostMapping("/payments/complete")
-    public String processPayment(@RequestBody PaymentCompletedEvent paymentCompletedEvent) {
+    public String processPayment(@RequestBody PaymentRequest request) {
+
+        PaymentCompletedEvent paymentCompletedEvent = new PaymentCompletedEvent(
+            request.getOrderId(),
+            request.getPaymentId()
+        );
 
         paymentProducer.sendPaymentEvent(paymentCompletedEvent);
         return "Payment Processed";
