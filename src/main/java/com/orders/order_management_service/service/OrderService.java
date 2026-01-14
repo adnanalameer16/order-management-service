@@ -24,12 +24,12 @@ public class OrderService {
 
     public Order createOrder(List<OrderItem> items) {
         String orderId = UUID.randomUUID().toString();
-        Order order = new Order(items,orderId, OrderStatus.PENDING_PAYMENT);
+        Order order = new Order(items,orderId, OrderStatus.PENDING_PAYMENT, "test-customer");
         Order savedOrder = orderRepository.save(order);
 
         OrderPlacedEvent event = new OrderPlacedEvent(
                 savedOrder.getOrderId(),
-                savedOrder.getTotalPrice(),
+                savedOrder.getSubtotal(),
                 savedOrder.getItems().size()
         );
 
