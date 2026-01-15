@@ -19,7 +19,7 @@ public class OrderTest {
                     new OrderItem("1", 100.0, 2)
             );
 
-            Order order = new Order(items, "order123", null, "test-customer");
+            Order order = new Order(items, "order123", null, "test-customer", 0.1);
 
             assertEquals(200.0, order.getSubtotal());
         }

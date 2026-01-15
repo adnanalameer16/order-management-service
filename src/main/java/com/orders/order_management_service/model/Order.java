@@ -23,7 +23,8 @@ public class Order {
     private double totalAmount;
     private String createdAt;
 
-    public Order(List<OrderItem> items, String orderId, OrderStatus orderStatus, String customerId) {
+    public Order(List<OrderItem> items, String orderId, OrderStatus orderStatus, String customerId, double taxRate) {
+        this.taxRate = taxRate;
         this.customerId = customerId;
         this.createdAt = Instant.now().toString();
         this.orderId = orderId;
@@ -34,7 +35,6 @@ public class Order {
 
     private void calculateTotalPrice() {
         subtotal = 0.0;
-        taxRate = 0.10;
         if (items != null) {
             for (OrderItem item : items) {
                 this.subtotal += item.getSubtotal();

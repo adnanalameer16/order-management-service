@@ -16,4 +16,6 @@ public class OrderRequest {
     @NotEmpty
     @Valid
     private List<OrderItem> orderItems;
+
+    private Double taxRate;
 }

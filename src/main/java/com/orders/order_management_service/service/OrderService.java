@@ -7,6 +7,7 @@ import com.orders.order_management_service.model.Order;
 import com.orders.order_management_service.model.OrderStatus;
 import com.orders.order_management_service.producer.OrderProducer;
 import com.orders.order_management_service.repository.OrderRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +22,18 @@ public class OrderService {
     @Autowired
     private OrderProducer orderProducer;
 
+    @Value("${order.tax-rate}")
+    private double defaultTaxRate;
+
     public OrderResponse createOrder(OrderRequest request) {
         String orderId = UUID.randomUUID().toString();
-        Order order = new Order(request.getOrderItems(), orderId, OrderStatus.PENDING_PAYMENT, "test-customer");
+        Double effectiveTaxRate;
+        if (request.getTaxRate() != null) {
+            effectiveTaxRate = request.getTaxRate();
+        } else {
+            effectiveTaxRate = defaultTaxRate;
+        }
+        Order order = new Order(request.getOrderItems(), orderId, OrderStatus.PENDING_PAYMENT, "test-customer", effectiveTaxRate);
         Order savedOrder = orderRepository.save(order);
         OrderPlacedEvent event = new OrderPlacedEvent(
                 savedOrder.getOrderId(),
