@@ -2,6 +2,7 @@ package com.orders.order_management_service.controller;
 
 import com.orders.order_management_service.dto.OrderRequest;
 import com.orders.order_management_service.dto.OrderResponse;
+import com.orders.order_management_service.dto.PaginatedResponse;
 import com.orders.order_management_service.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,16 @@ public class OrderController {
     }
 
     @GetMapping("/customers/{customerId}/orders")
-    public Page<OrderResponse> getOrdersByCustomer(@PathVariable String customerId,
-                                                   @PageableDefault(size = 10, sort = "createdAt") Pageable pageable) {
-        return orderService.getOrdersByCustomer(customerId, pageable);}
+    public PaginatedResponse<OrderResponse> getOrdersByCustomer(@PathVariable String customerId,
+                                                                @PageableDefault(size = 10, sort = "createdAt") Pageable pageable) {
+        Page<OrderResponse> orders = orderService.getOrdersByCustomer(customerId, pageable);
+
+        return new PaginatedResponse<>(
+                orders.getContent(),
+                orders.getNumber(),
+                orders.getTotalPages(),
+                orders.getTotalElements(),
+                orders.getSize()
+        );
+    }
 }
