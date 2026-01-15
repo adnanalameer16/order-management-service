@@ -10,12 +10,12 @@ import com.orders.order_management_service.producer.OrderProducer;
 import com.orders.order_management_service.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -60,11 +60,9 @@ public class OrderService {
         return mapToOrderResponse(order);
     }
 
-    public List<OrderResponse> getOrdersByCustomer(String CustomerId) {
-        List<Order> orders = orderRepository.findByCustomerId(CustomerId);
-        return orders.stream()
-                .map(this::mapToOrderResponse)
-                .collect(Collectors.toList());
+    public Page<OrderResponse> getOrdersByCustomer(String CustomerId, Pageable pageable) {
+        Page<Order> orders = orderRepository.findByCustomerId(CustomerId, pageable);
+        return orders.map(this::mapToOrderResponse);
     }
 
     private OrderResponse mapToOrderResponse(Order order) {
