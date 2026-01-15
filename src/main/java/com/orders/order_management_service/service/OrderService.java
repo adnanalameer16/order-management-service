@@ -3,6 +3,7 @@ package com.orders.order_management_service.service;
 import com.orders.order_management_service.dto.OrderRequest;
 import com.orders.order_management_service.dto.OrderResponse;
 import com.orders.order_management_service.event.OrderPlacedEvent;
+import com.orders.order_management_service.exception.ResourceNotFoundException;
 import com.orders.order_management_service.model.Order;
 import com.orders.order_management_service.model.OrderStatus;
 import com.orders.order_management_service.producer.OrderProducer;
@@ -54,7 +55,7 @@ public class OrderService {
 
     public OrderResponse getOrder(String orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
 
         return mapToOrderResponse(order);
     }
