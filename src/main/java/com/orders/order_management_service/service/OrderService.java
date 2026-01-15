@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,9 +39,13 @@ public class OrderService {
         Order order = new Order(request.getOrderItems(), orderId, OrderStatus.PENDING_PAYMENT, request.getCustomerId(), effectiveTaxRate);
         Order savedOrder = orderRepository.save(order);
         OrderPlacedEvent event = new OrderPlacedEvent(
+                "order.created",
                 savedOrder.getOrderId(),
+                Instant.now().toString(),
+                savedOrder.getCustomerId(),
                 savedOrder.getSubtotal(),
-                savedOrder.getItems().size()
+                savedOrder.getTaxAmount(),
+                savedOrder.getTotalAmount()
         );
         orderProducer.sendOrderEvent(event);
 

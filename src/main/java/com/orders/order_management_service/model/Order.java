@@ -26,6 +26,7 @@ public class Order {
     private double taxAmount;
     private double totalAmount;
     private String createdAt;
+    private String updatedAt;
 
     public Order(List<OrderItem> items, String orderId, OrderStatus orderStatus, String customerId, double taxRate) {
         this.taxRate = taxRate;
@@ -34,6 +35,7 @@ public class Order {
         this.orderId = orderId;
         this.items = items;
         this.orderStatus = orderStatus;
+        this.updatedAt = this.createdAt;
         this.calculateTotalPrice();
     }
 

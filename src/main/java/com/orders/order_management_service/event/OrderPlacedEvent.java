@@ -10,7 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderPlacedEvent {
 
+    private String eventType;
     private String orderId;
+    private String timestamp;
+    private String customerId;
+    private double subtotal;
+    private double taxAmount;
     private double totalAmount;
-    private int totalItems;
 }
