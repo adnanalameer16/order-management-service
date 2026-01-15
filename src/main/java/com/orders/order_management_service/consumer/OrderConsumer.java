@@ -21,7 +21,7 @@ public class OrderConsumer {
     @Autowired
     private OrderProducer orderProducer;
 
-    @KafkaListener(topics = "payment-events", groupId = "order-group")
+    @KafkaListener(topics = "payment.completed", groupId = "order-group")
     public void handlePaymentEvent(PaymentCompletedEvent event) {
             orderRepository.findById(event.getOrderId()).ifPresentOrElse(order -> {
                 order.setOrderStatus(OrderStatus.PAID);
