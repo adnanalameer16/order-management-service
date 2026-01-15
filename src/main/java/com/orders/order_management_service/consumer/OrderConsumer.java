@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 @Service
 public class OrderConsumer {
 
@@ -19,12 +21,13 @@ public class OrderConsumer {
     @Autowired
     private OrderProducer orderProducer;
 
-    @KafkaListener(topics = "payment-events", groupId = "order-group")
+    @KafkaListener(topics = "payment.completed", groupId = "order-group")
     public void handlePaymentEvent(PaymentCompletedEvent event) {
             orderRepository.findById(event.getOrderId()).ifPresentOrElse(order -> {
                 order.setOrderStatus(OrderStatus.PAID);
                 orderRepository.save(order);
                 System.out.println("Received Payment Completed Event for Order ID: " + event.getOrderId());
+                order.setUpdatedAt(Instant.now().toString());
 
                 ReadyForShippingEvent readyForShippingEvent = new ReadyForShippingEvent(event.getOrderId());
                 orderProducer.sendShippingEvent(readyForShippingEvent);

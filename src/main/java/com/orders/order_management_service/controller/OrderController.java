@@ -5,6 +5,9 @@ import com.orders.order_management_service.dto.OrderResponse;
 import com.orders.order_management_service.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +27,7 @@ public class OrderController {
     }
 
     @GetMapping("/customers/{customerId}/orders")
-    public java.util.List<OrderResponse> getOrdersByCustomer(@PathVariable String customerId) {
-        return orderService.getOrdersByCustomer(customerId);}
+    public Page<OrderResponse> getOrdersByCustomer(@PathVariable String customerId,
+                                                   @PageableDefault(size = 10, sort = "createdAt") Pageable pageable) {
+        return orderService.getOrdersByCustomer(customerId, pageable);}
 }

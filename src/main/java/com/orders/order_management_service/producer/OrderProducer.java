@@ -14,7 +14,7 @@ public class OrderProducer {
 
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
-    private static final String TOPIC = "order-events";
+    private static final String TOPIC = "order.created";
     public void sendOrderEvent(OrderPlacedEvent event) {
 
         Message<OrderPlacedEvent> message = MessageBuilder

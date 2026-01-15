@@ -13,7 +13,7 @@ public class PaymentProducer {
 
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
-    private static final String TOPIC = "payment-events";
+    private static final String TOPIC = "payment.completed";
 
     public void sendPaymentEvent(PaymentCompletedEvent event) {
         Message<PaymentCompletedEvent> message = MessageBuilder
