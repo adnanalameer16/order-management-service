@@ -28,6 +28,6 @@ public class OrderController {
 
     @GetMapping("/customers/{customerId}/orders")
     public Page<OrderResponse> getOrdersByCustomer(@PathVariable String customerId,
-                                                   @PageableDefault(size = 10) Pageable pageable) {
+                                                   @PageableDefault(size = 10, sort = "createdAt") Pageable pageable) {
         return orderService.getOrdersByCustomer(customerId, pageable);}
 }
