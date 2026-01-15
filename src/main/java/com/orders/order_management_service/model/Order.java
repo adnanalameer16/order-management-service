@@ -1,6 +1,9 @@
 package com.orders.order_management_service.model;
 
+import com.aerospike.client.query.IndexCollectionType;
+import com.aerospike.client.query.IndexType;
 import lombok.Data;
+import org.springframework.data.aerospike.annotation.Indexed;
 import org.springframework.data.aerospike.mapping.Document;
 import org.springframework.data.annotation.Id;
 
@@ -16,6 +19,7 @@ public class Order {
     private OrderStatus orderStatus;
     @Id
     private String orderId;
+    @Indexed(type = IndexType.STRING, collectionType = IndexCollectionType.DEFAULT)
     private String customerId;
     private double subtotal;
     private double taxRate;

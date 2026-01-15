@@ -18,4 +18,6 @@ public class OrderRequest {
     private List<OrderItem> orderItems;
 
     private Double taxRate;
+
+    private String customerId;
 }

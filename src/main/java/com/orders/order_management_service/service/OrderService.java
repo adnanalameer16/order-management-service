@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -33,7 +35,7 @@ public class OrderService {
         } else {
             effectiveTaxRate = defaultTaxRate;
         }
-        Order order = new Order(request.getOrderItems(), orderId, OrderStatus.PENDING_PAYMENT, "test-customer", effectiveTaxRate);
+        Order order = new Order(request.getOrderItems(), orderId, OrderStatus.PENDING_PAYMENT, request.getCustomerId(), effectiveTaxRate);
         Order savedOrder = orderRepository.save(order);
         OrderPlacedEvent event = new OrderPlacedEvent(
                 savedOrder.getOrderId(),
@@ -50,6 +52,13 @@ public class OrderService {
                 .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
 
         return mapToOrderResponse(order);
+    }
+
+    public List<OrderResponse> getOrdersByCustomer(String CustomerId) {
+        List<Order> orders = orderRepository.findByCustomerId(CustomerId);
+        return orders.stream()
+                .map(this::mapToOrderResponse)
+                .collect(Collectors.toList());
     }
 
     private OrderResponse mapToOrderResponse(Order order) {

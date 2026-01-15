@@ -22,4 +22,8 @@ public class OrderController {
     public OrderResponse getOrder(@PathVariable String id) {
         return orderService.getOrder(id);
     }
+
+    @GetMapping("/customers/{customerId}/orders")
+    public java.util.List<OrderResponse> getOrdersByCustomer(@PathVariable String customerId) {
+        return orderService.getOrdersByCustomer(customerId);}
 }
