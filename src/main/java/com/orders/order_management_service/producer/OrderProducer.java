@@ -7,9 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class OrderProducer {
@@ -28,8 +31,14 @@ public class OrderProducer {
                                             .setHeader("event-type", "OrderPlaced")
                                             .build();
 
-        kafkaTemplate.send(message);
-        logger.debug("OrderPlacedEvent published successfully to topic: {}", TOPIC);
+        CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(message);
+        future.whenComplete((result, ex) -> {
+            if (ex != null) {
+                logger.error("CRITICAL: Failed to publish OrderPlacedEvent for Order ID: {}", event.getOrderId(), ex);
+            } else {
+                logger.info("OrderPlacedEvent published successfully to topic: {}", TOPIC);
+            }
+        });
     }
 
     public void sendShippingEvent(ReadyForShippingEvent event) {
