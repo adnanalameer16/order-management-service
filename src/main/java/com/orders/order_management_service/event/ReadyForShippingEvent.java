@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class ReadyForShippingEvent {
 
     private String orderId;
+    private String correlationId;
 }

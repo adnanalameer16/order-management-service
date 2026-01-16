@@ -1,6 +1,7 @@
 package com.orders.order_management_service.producer;
 
 import com.orders.order_management_service.event.PaymentCompletedEvent;
+
 import org.apache.kafka.common.network.Send;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ public class PaymentProducer {
                                                     .setHeader(KafkaHeaders.TOPIC, TOPIC)
                                                     .setHeader("event-type", "PaymentCompleted")
                                                     .build();
+
         CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(message);
         future.whenComplete((result, ex) -> {
             if (ex != null) {
@@ -38,5 +40,6 @@ public class PaymentProducer {
                 logger.info("PaymentCompletedEvent published successfully to topic: {}", TOPIC);
             }
         });
+
     }
 }

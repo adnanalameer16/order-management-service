@@ -1,11 +1,13 @@
 package com.orders.order_management_service.consumer;
 
-
 import com.orders.order_management_service.event.PaymentCompletedEvent;
 import com.orders.order_management_service.event.ReadyForShippingEvent;
 import com.orders.order_management_service.model.OrderStatus;
 import com.orders.order_management_service.producer.OrderProducer;
 import com.orders.order_management_service.repository.OrderRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC; // <--- Import this
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,8 @@ import java.time.Instant;
 @Service
 public class OrderConsumer {
 
+    private static final Logger logger = LoggerFactory.getLogger(OrderConsumer.class);
+
     @Autowired
     private OrderRepository orderRepository;
 
@@ -23,17 +27,28 @@ public class OrderConsumer {
 
     @KafkaListener(topics = "payment.completed", groupId = "order-group")
     public void handlePaymentEvent(PaymentCompletedEvent event) {
+        if (event.getCorrelationId() != null) {
+            MDC.put("correlationId", event.getCorrelationId());
+        }
+
+        try {
+            logger.info("Received PaymentCompletedEvent for Order ID: {}", event.getOrderId());
+
             orderRepository.findById(event.getOrderId()).ifPresentOrElse(order -> {
                 order.setOrderStatus(OrderStatus.PAID);
-                orderRepository.save(order);
-                System.out.println("Received Payment Completed Event for Order ID: " + event.getOrderId());
                 order.setUpdatedAt(Instant.now().toString());
-
-                ReadyForShippingEvent readyForShippingEvent = new ReadyForShippingEvent(event.getOrderId());
+                orderRepository.save(order);
+                logger.info("Order status updated to PAID for Order ID: {}", event.getOrderId());
+                ReadyForShippingEvent readyForShippingEvent = new ReadyForShippingEvent(
+                        event.getOrderId(),
+                        event.getCorrelationId()
+                );
                 orderProducer.sendShippingEvent(readyForShippingEvent);
-                System.out.println("Sent Ready For Shipping Event for Order ID: " + readyForShippingEvent.getOrderId());
-            } , () -> {
-                System.out.println("Order not found for Order ID: " + event.getOrderId());
+            }, () -> {
+                logger.warn("Order not found for Order ID: {}", event.getOrderId());
             });
+        } finally {
+            MDC.clear();
+        }
     }
 }
