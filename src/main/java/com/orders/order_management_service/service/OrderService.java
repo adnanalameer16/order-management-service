@@ -10,6 +10,7 @@ import com.orders.order_management_service.producer.OrderProducer;
 import com.orders.order_management_service.repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -52,7 +53,8 @@ public class OrderService {
                 savedOrder.getCustomerId(),
                 savedOrder.getSubtotal(),
                 savedOrder.getTaxAmount(),
-                savedOrder.getTotalAmount()
+                savedOrder.getTotalAmount(),
+                MDC.get("correlationId")
         );
         orderProducer.sendOrderEvent(event);
 

@@ -7,6 +7,7 @@ import com.orders.order_management_service.producer.PaymentProducer;
 import com.orders.order_management_service.repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +35,8 @@ public class PaymentController {
 
         PaymentCompletedEvent paymentCompletedEvent = new PaymentCompletedEvent(
             request.getOrderId(),
-            request.getPaymentId()
+            request.getPaymentId(),
+            MDC.get("correlationId")
         );
 
         paymentProducer.sendPaymentEvent(paymentCompletedEvent);

@@ -17,4 +17,5 @@ public class OrderPlacedEvent {
     private double subtotal;
     private double taxAmount;
     private double totalAmount;
+    private String correlationId;
 }
