@@ -11,4 +11,5 @@ public class PaymentCompletedEvent {
 
     private String orderId;
     private String paymentId;
+    private String correlationId;
 }

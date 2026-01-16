@@ -2,6 +2,8 @@ package com.orders.order_management_service.producer;
 
 import com.orders.order_management_service.event.OrderPlacedEvent;
 import com.orders.order_management_service.event.ReadyForShippingEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -12,11 +14,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderProducer {
 
+    private static final Logger logger = LoggerFactory.getLogger(OrderProducer.class);
+
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
     private static final String TOPIC = "order.created";
-    public void sendOrderEvent(OrderPlacedEvent event) {
 
+    public void sendOrderEvent(OrderPlacedEvent event) {
+        logger.info("Publishing OrderPlacedEvent for Order ID: {}", event.getOrderId());
         Message<OrderPlacedEvent> message = MessageBuilder
                                             .withPayload(event)
                                             .setHeader(KafkaHeaders.TOPIC, TOPIC)
@@ -24,12 +29,11 @@ public class OrderProducer {
                                             .build();
 
         kafkaTemplate.send(message);
-        System.out.println("Message Sent to Kafka: " + event.getOrderId());
-
+        logger.debug("OrderPlacedEvent published successfully to topic: {}", TOPIC);
     }
 
     public void sendShippingEvent(ReadyForShippingEvent event) {
-
+        logger.info("Publishing ReadyForShippingEvent for Order ID: {}", event.getOrderId());
         Message<ReadyForShippingEvent> message = MessageBuilder
                                             .withPayload(event)
                                             .setHeader(KafkaHeaders.TOPIC, "order.ready_for_shipping")
@@ -37,7 +41,6 @@ public class OrderProducer {
                                             .build();
 
         kafkaTemplate.send(message);
-        System.out.println("Shipping Event Sent to Kafka");
-
+        logger.debug("ReadyForShippingEvent published successfully to topic: order.ready_for_shipping");
     }
 }
