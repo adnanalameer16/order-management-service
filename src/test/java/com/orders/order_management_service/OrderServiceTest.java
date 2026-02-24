@@ -157,7 +157,7 @@ public class OrderServiceTest {
         Order mockOrder = new Order(
                 List.of(new OrderItem("Laptop", 100.0, 2)),
                 orderId,
-                null,
+                OrderStatus.PAID,
                 "test-customer",
                 0.1
         );
